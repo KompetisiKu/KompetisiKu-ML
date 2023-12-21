@@ -6,6 +6,7 @@ import re
 # from databases import mysql
 from databases import open_connection
 from numpy.linalg import norm
+import pymysql
 
 err = ''
 
@@ -63,11 +64,15 @@ try:
     # Mengambil data dari tabel
     with data.cursor() as cursor:
         cursor.execute('SELECT * FROM competitions')
-        lomba_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
+        lomba_df = cursor.fetchall()
+        # Yang bawah ga jadi dipake karena Cursornya udah Dict
+        # lomba_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
 
     with data.cursor() as cursor:
         cursor.execute('SELECT * FROM users')
-        user_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
+        user_df = cursor.fetchall()
+        # Yang bawah ga jadi dipake karena Cursornya udah Dict
+        # user_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
 
     # Meng-convert data menjadi np.array
     lomba_df = np.array(lomba_df)

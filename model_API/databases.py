@@ -52,7 +52,7 @@ def open_connection():
                                 cursorclass=pymysql.cursors.DictCursor
                                 )
     except pymysql.MySQLError as e:
-        print(e)
+        conn = str(e)
     return conn
 
 # def get_user():
