@@ -11,4 +11,5 @@ def mysql():
         )
         return cnx
     except Error as e:
-        return e
+        print("Terjadi masalah pada Database : " + str(e))
+        return None
