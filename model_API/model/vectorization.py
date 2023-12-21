@@ -1,9 +1,10 @@
-from mysql.connector import Error
+# from mysql.connector import Error
 import pandas as pd
 import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
 import re
-from databases import mysql
+# from databases import mysql
+from databases import open_connection
 from numpy.linalg import norm
 
 err = ''
@@ -57,15 +58,15 @@ def input_to_dataframe(lis, df_data, col_location, col_name):
 
 try:
     # Koneksi ke Database
-    data = mysql()
+    data = open_connection()
 
     # Mengambil data dari tabel
     with data.cursor() as cursor:
-        cursor.execute('SELECT * FROM lomba')
+        cursor.execute('SELECT * FROM competitions')
         lomba_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
 
     with data.cursor() as cursor:
-        cursor.execute('SELECT * FROM user')
+        cursor.execute('SELECT * FROM users')
         user_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
 
     # Meng-convert data menjadi np.array
@@ -73,7 +74,7 @@ try:
     user_df = np.array(user_df)
 
     # Mengekstrak data yang dibutuhkan
-    categories = extract_data(lomba_df, 'category_id')
+    categories = extract_data(lomba_df, 'category')
     user_categories = extract_data(user_df, 'interestCategory')
 
     # Lowercase kategori
@@ -87,8 +88,8 @@ try:
     user_categories_tokenized = tokenizer.texts_to_sequences(user_categories)
 
     # Pengecekan Tokenisasi
-    # word_index = tokenizer.word_index
-    # print(word_index)
+    word_index = tokenizer.word_index
+    word_index = list(word_index.keys())
 
     # Mengambil token unik
     unique_tokens = list(set(item for sublist in categories_tokenized for item in sublist))
@@ -103,14 +104,14 @@ try:
     user_mhe = np.array(user_mhe)
 
     # Mengambil data prize_pool
-    prize = extract_data(lomba_df, 'prize_pool')
+    prize = extract_data(lomba_df, 'reward')
     # Memasukkan data number yang telah di-clean
     prize = [extract_numbers(item) for item in prize]
     # Cleansing data prize
     cleaned_prize = clean_data(prize)
 
     # Mengambil data prize_pool
-    regis_price = extract_data(lomba_df, 'regis_price')
+    regis_price = extract_data(lomba_df, 'pricePerItem')
     # Apply the function to each item in the list
     regis_price = [extract_numbers(item) for item in regis_price]
     # Flatten the list of lists and remove empty strings within inner lists
@@ -118,11 +119,8 @@ try:
 
     # Membuat variabel untuk data lomba bersih
     lomba_df_bersih = multiple_hot_encoded.tolist()
-    # Header DF
-    header_list = ['seni', 'bisnisdankewirausahaan', 'debat', 'karyatulis', 'teknologidaninovasi', 'olahraga',
-                   'itdevelopment', 'olimpiadebahasainggris', 'programing', 'fotografi', 'sains']
     # Mengubah data MHE Lomba menjadi Dataframe
-    lomba_df_bersih = pd.DataFrame(lomba_df_bersih, columns=header_list)
+    lomba_df_bersih = pd.DataFrame(lomba_df_bersih, columns=word_index)
     # Memasukkan ID lomba ke dalam DataFrame
     lomba_df_bersih = input_to_dataframe(extract_data(lomba_df, 'id'), lomba_df_bersih, 0, 'id')
 
@@ -140,12 +138,12 @@ try:
                 np.max(regis_price_array) - np.min(regis_price_array))) / 2
     # Memasukkan normalized_regis_price ke DataFrame
     lomba_df_bersih = input_to_dataframe(normalized_regis_price, lomba_df_bersih, lomba_df_bersih.shape[1],
-                                         'regis_price')
+                                         'pricePerItem')
 
     # Membuat variabel untuk data user bersih
     user_df_bersih = user_mhe.tolist()
     # Mengubah data MHE User menjadi Dataframe
-    user_df_bersih = pd.DataFrame(user_df_bersih, columns=header_list)
+    user_df_bersih = pd.DataFrame(user_df_bersih, columns=word_index)
     # Memasukkan ID user ke dalam DataFrame
     user_df_bersih = input_to_dataframe(extract_data(user_df, 'id'), user_df_bersih, 0, 'id')
     # Memasukkan PrioritizePrize ke DataFrame
@@ -161,10 +159,10 @@ try:
     lomba_id = extract_data(lomba_df, 'id')
     lomba_title = extract_data(lomba_df, 'title')
 
-except (ValueError, Error) as e:
+except (ValueError, pymysql.MySQLError) as e:
     if ValueError:
         err = "Database kosong, " + str(e)
-    elif Error:
+    elif pymysql.MySQLError:
         err = "Database Bermasalah, " + str(e)
 
 
