@@ -18,22 +18,21 @@
 
 ## CLOUD SQL CONNECTOR ##
 
-# Import the connector helper
-# import pymysql
-# from google.cloud.sql.connector import Connector, IPTypes
+# Copyright 2022 Google LLC
 #
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# # function to return the database connection
-# def getconn() -> pymysql.connections.Connection:
-#     conn: pymysql.connections.Connection = Connector.connect(
-#         "psychic-linker-402714:us-central1:kompetisiku-backend",
-#         "pymysql",
-#         user="root",
-#         password="root",
-#         db="kompetisiku"
-#     )
-#     return conn
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
+# [START cloud_sql_mysql_sqlalchemy_connect_connector]
 import os
 
 from google.cloud.sql.connector import Connector, IPTypes
@@ -95,3 +94,27 @@ def connect_with_connector() -> sqlalchemy.engine.base.Engine:
         # [END_EXCLUDE]
     )
     return pool
+
+
+# [END cloud_sql_mysql_sqlalchemy_connect_connector]
+
+# import os
+# import pymysql
+#
+# db_user = os.environ.get('CLOUD_SQL_USERNAME')
+# db_password = os.environ.get('CLOUD_SQL_PASSWORD')
+# db_name = os.environ.get('CLOUD_SQL_DATABASE_NAME')
+# db_connection_name = os.environ.get('CLOUD_SQL_CONNECTION_NAME')
+#
+#
+# def open_connection():
+#     unix_socket = '/cloudsql/{}'.format(db_connection_name)
+#     try:
+#         if os.environ.get('GAE_ENV') == 'standard':
+#             conn = pymysql.connect(user=db_user, password=db_password,
+#                                 unix_socket=unix_socket, db=db_name,
+#                                 cursorclass=pymysql.cursors.DictCursor
+#                                 )
+#     except pymysql.MySQLError as e:
+#         conn = str(e)
+#     return conn

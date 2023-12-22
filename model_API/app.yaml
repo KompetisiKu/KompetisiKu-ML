@@ -1,9 +1,0 @@
-#app.yaml
-runtime: python39
-entrypoint: gunicorn -b :$PORT main:app
-
-env_variables:
-  CLOUD_SQL_USERNAME: root
-  CLOUD_SQL_PASSWORD: root
-  CLOUD_SQL_DATABASE_NAME: kompetisiku
-  CLOUD_SQL_CONNECTION_NAME: psychic-linker-402714:us-central1:kompetisiku-backend
