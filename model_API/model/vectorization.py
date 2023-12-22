@@ -152,10 +152,10 @@ try:
     # Memasukkan ID user ke dalam DataFrame
     user_df_bersih = input_to_dataframe(extract_data(user_df, 'id'), user_df_bersih, 0, 'id')
     # Memasukkan PrioritizePrize ke DataFrame
-    user_df_bersih = input_to_dataframe(extract_data(user_df, 'PrioritizePrize'), user_df_bersih,
+    user_df_bersih = input_to_dataframe(extract_data(user_df, 'isPrioritizePrize'), user_df_bersih,
                                         user_df_bersih.shape[1], 'isPrioritizePrize')
     # Memasukkan ConsiderRegisPrice ke DataFrame
-    user_df_bersih = input_to_dataframe(extract_data(user_df, 'ConsiderRegisPrice'), user_df_bersih,
+    user_df_bersih = input_to_dataframe(extract_data(user_df, 'isConsiderRegisPrice'), user_df_bersih,
                                         user_df_bersih.shape[1], 'isConsiderRegisPrice')
 
     # Perubahan data bersih tadi dalam bentuk vektor
