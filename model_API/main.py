@@ -12,8 +12,7 @@ app.json.sort_keys = False
 
 @app.route('/', methods=['POST'])
 def vector_recommendation():
-    # Ini diubah jadi integer dulu karena di db lokal ID nya di-set integer, bukan string
-    user_id = int(request.form['user_id'])
+    user_id = request.form['user_id']
     rec = vector_rec(user_id)
     if isinstance(rec, dict):
         return jsonify(rec)
