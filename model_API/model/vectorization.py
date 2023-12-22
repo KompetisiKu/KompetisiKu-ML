@@ -4,9 +4,10 @@ import numpy as np
 from tensorflow.keras.preprocessing.text import Tokenizer
 import re
 # from databases import mysql
-from databases import open_connection
+from databases import connect_with_connector
 from numpy.linalg import norm
 import pymysql
+from sqlalchemy import text
 
 err = ''
 
@@ -59,19 +60,20 @@ def input_to_dataframe(lis, df_data, col_location, col_name):
 
 try:
     # Koneksi ke Database
-    data = open_connection()
+    data = connect_with_connector()
 
     # Mengambil data dari tabel
-    with data.cursor() as cursor:
-        cursor.execute('SELECT * FROM competitions')
-        lomba_df = cursor.fetchall()
-        # Yang bawah ga jadi dipake karena Cursornya udah Dict
-        # lomba_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
+    with data.connect() as connect:
+        connect.execute(text('SELECT * FROM competitions'))
+        result = connect.fetchall()
+        connect.commit()
+        lomba_df = result.mappings().all()
+        # lomba_df = [dict((connect.description[i][0], value) for i, value in enumerate(row)) for row in ]
 
-    with data.cursor() as cursor:
-        cursor.execute('SELECT * FROM users')
-        user_df = cursor.fetchall()
-        # Yang bawah ga jadi dipake karena Cursornya udah Dict
+        connect.execute(text('SELECT * FROM users'))
+        result = connect.fetchall()
+        connect.commit()
+        user_df = result.mappings().all()
         # user_df = [dict((cursor.description[i][0], value) for i, value in enumerate(row)) for row in cursor.fetchall()]
 
     # Meng-convert data menjadi np.array
